@@ -26,6 +26,16 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// https://mvnrepository.com/artifact/org.yaml/snakeyaml
+	implementation("org.yaml:snakeyaml:2.4")
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation("org.junit.vintage:junit-vintage-engine") {
+		exclude group: "org.hamcrest", module: "hamcrest-core"
+	}
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -33,5 +43,10 @@ dependencies {
 }
 
 tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+test {
 	useJUnitPlatform()
 }
