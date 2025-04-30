@@ -1,0 +1,38 @@
+variables:
+  - name: N
+    kind: numeric
+    numeric_type: integer
+    min: 1
+    max: 100
+  - name: K
+    kind: numeric
+    numeric_type: integer
+    min: 1
+    max: 100000
+
+patterns:
+  - name: bag
+    repeat: N
+    body:
+      variables:
+        - name: W
+          kind: numeric
+          numeric_type: integer
+          min: 1
+          max: 100000
+        - name: V
+          kind: numeric
+          numeric_type: integer
+          min: 0
+          max: 1000
+
+    print:
+      - W
+      - V
+      - nl
+
+print:
+  - N
+  - K
+  - nl
+  - bag
