@@ -2,7 +2,10 @@ name: CI
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - develop
+      - main
+      - release/**
 
 jobs:
   build-test:
@@ -28,15 +31,28 @@ jobs:
 
       # 4) 단위 테스트
       - name: Run unit tests
-        run: ./gradlew --no-daemon clean test
+        run: ./gradlew --no-daemon test
 
-      # 5) 빌드(실행 JAR 생성)
-      - name: Build executable jar
-        run: ./gradlew --no-daemon bootJar
-
-      # 6) 테스트 리포트
-      - name: Upload Test Report
+      # 테스트 리포트 업로드
+      - name: Upload Test Report (HTML)
         uses: actions/upload-artifact@v4
         with:
           name: junit-report
-          path: build/reports/tests/test
+          path: build/reports/tests/test/**/*.html
+      - name: Upload Test Report (XML)
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-xml-report
+          path: build/test-results/test/**/*.xml
+
+      # 5) 빌드(실행 JAR 생성)
+      - name: Build executable jar
+        run: ./gradlew --no-daemon bootJar -x test
+
+      # 빌드 실패 시 로그 업로드
+      - name: Upload Build Logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: build/reports/
