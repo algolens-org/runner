@@ -1,38 +1,103 @@
-variables:
-  - name: N
-    kind: numeric
-    numeric_type: integer
-    min: 1
-    max: 100
-  - name: K
-    kind: numeric
-    numeric_type: integer
-    min: 1
-    max: 100000
+spec:
+  variables:
+    - name: N
+      kind: numeric
+      numeric_type: integer
+      min: 1
+      max: 100
+    - name: K
+      kind: numeric
+      numeric_type: integer
+      min: 1
+      max: 100000
 
-patterns:
-  - name: bag
-    repeat: N
-    body:
-      variables:
-        - name: W
-          kind: numeric
-          numeric_type: integer
-          min: 1
-          max: 100000
-        - name: V
-          kind: numeric
-          numeric_type: integer
-          min: 0
-          max: 1000
+  patterns:
+    - name: bag
+      repeat: N
+      body:
+        variables:
+          - name: W
+            kind: numeric
+            numeric_type: integer
+            min: 1
+            max: 100000
+          - name: V
+            kind: numeric
+            numeric_type: integer
+            min: 0
+            max: 1000
 
-    print:
-      - W
-      - V
-      - nl
+      print:
+        - W
+        - V
+        - nl
 
-print:
-  - N
-  - K
-  - nl
-  - bag
+  print:
+    - N
+    - K
+    - nl
+    - bag
+
+solutionCode:
+  #include <iostream>
+  #include <vector>
+
+  using namespace std;
+
+  int main (){
+  int N,K;
+  cin>>N>>K;
+  
+  vector<vector<int>> stuff(N+1,vector<int>(2)); //0:weight, 1:value
+  vector<vector<int>> dp(N+1,vector<int>(K+1,0));
+  
+  for(int i=1; i<=N; i++){
+  cin>>stuff[i][0]>>stuff[i][1];
+  }
+  
+  for(int i=1; i<=N; i++){
+  int weight = stuff[i][0];
+  int value = stuff[i][1];
+  for(int j=1; j<=K; j++){
+  if(j < weight) dp[i][j] = dp[i-1][j];
+  else dp[i][j] = max(dp[i-1][j], dp[i-1][j-weight] + value);
+  }
+  }
+  
+  cout<<dp[N][K];
+  return 0;
+  }
+userCode:
+  #include <iostream>
+
+  using namespace std;
+
+  int max (int n1, int n2){
+  return (n1>n2 ? n1:n2);
+  }
+
+  int main (){
+  int n,k;
+  cin>>n>>k;
+  
+  int stuff[n+1][2]; //0:weight, 1:value
+  int arr[n+1][k+1]; //arr[weight][value]
+  
+  for (int i=1; i<=n; i++){
+  cin>>stuff[i][0]>>stuff[i][1];
+  }
+  
+  for (int i=0; i<=k; i++)
+  arr[0][i] = 0;
+  
+  for(int i=1; i<=n; i++){
+  int w = stuff[i][0];
+  int v = stuff[i][1];
+  for (int j=0; j<=k; j++){
+  arr[i][j] = j<w? arr[i-1][j]:max(arr[i-1][j],arr[i-1][j-w]+v);
+  }
+  }
+  
+  cout<<arr[n][k];
+  return 0;
+  }

@@ -1,6 +1,7 @@
 package com.algo.algolensrunner.domain.yamlparser.service;
 
 import com.algo.algolensrunner.domain.yamlparser.dto.SpecDTO;
+import com.algo.algolensrunner.domain.yamlparser.dto.YamlDTO;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -9,6 +10,7 @@ import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -93,7 +95,7 @@ public class ParserService {
         opts.setEnumCaseSensitive(false);       // enum 매핑 시 대소문자 구분 무시
         // ▲▲▲----------------------------------------------------▲▲▲
 
-        Constructor cons = new Constructor(SpecDTO.class, opts);
+        Constructor cons = new Constructor(YamlDTO.class, opts);
         cons.setPropertyUtils(new SnakeToCamelUtils());   // snake→camel 변환기 주입
         this.yaml = new Yaml(cons);                       // 재사용 가능한 불변 객체
     }
@@ -103,17 +105,13 @@ public class ParserService {
     // ======================================================================
 
     /**
-     * 주어진 파일 경로에 있는 YAML 문서를 읽어 {@link SpecDTO}로 파싱한다.
+     * 주어진 파일 경로에 있는 YAML 문서를 읽어 {@link com.algo.algolensrunner.domain.yamlparser.dto.YamlDTO}로 파싱한다.
      *
-     * @param file 읽을 YAML 파일의 <b>절대/상대 경로</b>
-     * @return     파싱된 {@link SpecDTO} 객체
-     * @throws IOException <ul>
-     *   <li>경로가 잘못되었거나 파일이 없는 경우</li>
-     *   <li>파일을 읽을 수 없는 경우(권한 등)</li>
-     * </ul>
+     * @param str 읽을 YAML 파일
+     * @return     파싱된 {@link com.algo.algolensrunner.domain.yamlparser.dto.YamlDTO} 객체
+
      */
-    public SpecDTO createDTO(String file) throws IOException {
-        // 한 줄로 끝나는 단순 호출이라도 예외를 명시해두면 호출측이 명확히 인지할 수 있다.
-        return yaml.load(Files.newInputStream(Path.of(file)));
+    public YamlDTO createDTO(String str) {
+        return yaml.load(new StringReader(str));
     }
 }
